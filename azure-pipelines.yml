@@ -16,6 +16,5 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: 'FluentCommandLine.sln'
+    projects: 'src/FluentCommandLine.sln'
     arguments: '--configuration $(buildConfiguration)'
-    workingDirectory: 'src'
