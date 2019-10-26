@@ -1,0 +1,48 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: GitVersion@5
+  displayName: Git Version
+  inputs:
+    runtime: 'core'
+    updateAssemblyInfo: true
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: 'build'
+    projects: 'src/FluentCommandLine.sln'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: CopyFiles@2
+  displayName: Copy build results
+  inputs:
+    SourceFolder: 'src/FluentCommandLine/bin'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: Package
+  inputs:
+    command: 'pack'
+    packagesToPack: 'src/FluentCommandLine/FluentCommandLine.csproj'
+    nobuild: true
+    includesymbols: true
+    includesource: true
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'GITVERSION_NUGETVERSIONV2'
+    verbosityPack: Detailed
+
+- task: PublishBuildArtifacts@1
+  displayName: Upload
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'Packages'
+
