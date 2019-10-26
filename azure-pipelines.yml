@@ -18,13 +18,13 @@ steps:
   displayName: Build
   inputs:
     command: 'build'
-    projects: 'src/FluentCommandLine.sln'
+    projects: 'src/CommandLineBuilder.sln'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: CopyFiles@2
   displayName: Copy build results
   inputs:
-    SourceFolder: 'src/FluentCommandLine/bin'
+    SourceFolder: 'src/CommandLineBuilder/bin'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
@@ -32,7 +32,7 @@ steps:
   displayName: Package
   inputs:
     command: 'pack'
-    packagesToPack: 'src/FluentCommandLine/FluentCommandLine.csproj'
+    packagesToPack: 'src/CommandLineBuilder/CommandLineBuilder.csproj'
     nobuild: true
     includesymbols: true
     includesource: true
@@ -44,5 +44,5 @@ steps:
   displayName: Upload
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'Packages'
+    artifactName: 'Output'
 
