@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal interface ICommandWithSettingsBuilder<T, TSettings> : ICommandBuilder
         where T : ICommandWithSettingsBuilder<T, TSettings>

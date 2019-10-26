@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal sealed class Command
     {
@@ -136,7 +136,7 @@ namespace CommandLineBuilder
                 {
                     error = $"Unrecognized command: { args[0] }";
                 }
-                entrypoint = new HelpEntrypoint(parseContext.helpOptions, this, error);
+                entrypoint = new ErrorEntrypoint(parseContext, error);
                 return true;
             }
 
@@ -152,7 +152,12 @@ namespace CommandLineBuilder
 
                     foreach (var applicator in parseContext.OptionApplicators)
                     {
-                        applicator(settings);
+                        var result = applicator(settings);
+                        if (!result.IsSuccess)
+                        {
+                            entrypoint = new ErrorEntrypoint(parseContext, result.Error);
+                            return true;
+                        }
                     }
 
                     foreach (var applicator in parseContext.SwitchApplicators)
@@ -167,7 +172,7 @@ namespace CommandLineBuilder
                             var application = applicator(settings);
                             if (!application.IsSuccess)
                             {
-                                entrypoint = new HelpEntrypoint(parseContext.helpOptions, this, application.Error, application.ErrorDetail);
+                                entrypoint = new ErrorEntrypoint(parseContext, application.Error);
                                 return true;
                             }
                         }
@@ -203,7 +208,7 @@ namespace CommandLineBuilder
                     error = $"Command { this.name } requires a subcommand.";
                 }
                 
-                entrypoint = new HelpEntrypoint(parseContext.helpOptions, this, error);
+                entrypoint = new HelpEntrypoint(parseContext, this, error);
                 return true;
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal static class NonTerminalCommandWithSettingsBuilderExtensions
     {

@@ -1,22 +1,24 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal sealed class HelpEntrypoint : IEntrypoint
     {
         private readonly string error;
         private readonly string? errorDetail;
         private readonly HelpOptions helpOptions;
+        private readonly ParserOptions parserOptions;
         private readonly Command parsedCommand;
 
         public HelpEntrypoint(
-            HelpOptions helpOptions,
+            ParseContext parseContext,
             Command parsedCommand,
             string error,
             string? detail = null)
         {
-            this.helpOptions = helpOptions;
+            this.helpOptions = parseContext.helpOptions;
+            this.parserOptions = parseContext.parserOptions;
             this.parsedCommand = parsedCommand;
             this.error = error;
             this.errorDetail = detail;
@@ -30,15 +32,15 @@ namespace CommandLineBuilder
             }
             else
             {
-                this.helpOptions.OutputHandler!(this.error);
+                this.parserOptions.OutputHandler?.Invoke(this.error);
                 if (this.errorDetail != null)
                 {
-                    this.helpOptions.OutputHandler($" -> { this.errorDetail }");
+                    this.parserOptions.OutputHandler?.Invoke($" -> { this.errorDetail }");
                 }
 
-                this.helpOptions.OutputHandler("");
+                this.parserOptions.OutputHandler?.Invoke("");
 
-                this.helpOptions.OutputHandler(this.parsedCommand.ToString());
+                this.parserOptions.OutputHandler?.Invoke(this.parsedCommand.ToString());
                 return Task.FromResult(this.helpOptions.ExitCode);
             }
         }

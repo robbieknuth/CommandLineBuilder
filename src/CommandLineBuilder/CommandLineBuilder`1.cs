@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public sealed class CommandLineBuilder<TSettings> : INonTerminalCommandWithSettingsBuilder<CommandLineBuilder<TSettings>, TSettings>
         where TSettings : new()
@@ -10,11 +10,13 @@ namespace CommandLineBuilder
 
         private readonly Command command;
         private readonly HelpOptions helpOptions;
+        private readonly ParserOptions parserOptions;
 
         public CommandLineBuilder(string applicationName)
         {
             this.command = Command.CreateRoot<TSettings>(applicationName);
             this.helpOptions = new HelpOptions();
+            this.parserOptions = new ParserOptions();
         }
 
         public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
@@ -38,9 +40,15 @@ namespace CommandLineBuilder
             return this;
         }
 
+        public CommandLineBuilder<TSettings> Configure(Action<ParserOptions> optionsConfigure)
+        {
+            optionsConfigure(this.parserOptions);
+            return this;
+        }
+
         public IParser Build()
         {
-            return new Parser(this.helpOptions, this.command);
+            return new Parser(this.parserOptions, this.helpOptions, this.command);
         }
     }
 }

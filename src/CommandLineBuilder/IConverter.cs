@@ -1,4 +1,4 @@
-﻿namespace CommandLineBuilder
+﻿namespace CommandLine
 {
     public interface IConverter<T>
     {

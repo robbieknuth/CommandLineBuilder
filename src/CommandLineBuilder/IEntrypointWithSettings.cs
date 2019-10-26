@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public interface IEntrypointWithSettings<TSettings>
     {

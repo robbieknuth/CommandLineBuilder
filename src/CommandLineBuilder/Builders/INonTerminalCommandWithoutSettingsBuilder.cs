@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal interface INonTerminalCommandWithoutSettingsBuilder<T> : ICommandBuilder
         where T : INonTerminalCommandWithoutSettingsBuilder<T>
