@@ -2,7 +2,7 @@
 
 using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public readonly struct ConversionResult<T>
     { 

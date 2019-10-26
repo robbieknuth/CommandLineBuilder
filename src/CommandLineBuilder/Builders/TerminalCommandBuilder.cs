@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public sealed class TerminalCommandBuilder<TEntrypoint> : ICommandBuilder
     {

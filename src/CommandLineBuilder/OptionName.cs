@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal sealed class OptionName : IEquatable<OptionName>
     {

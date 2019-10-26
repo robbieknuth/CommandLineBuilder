@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     internal sealed class ParseContext
     {
         internal readonly HelpOptions helpOptions;
+        internal readonly ParserOptions parserOptions;
 
-        public ParseContext(HelpOptions helpOptions)
+        public ParseContext(ParserOptions parserOptions, HelpOptions helpOptions)
         {
             this.helpOptions = helpOptions;
+            this.parserOptions = parserOptions;
         }
 
         public List<Func<object, ApplicationResult>> OptionApplicators { get; } = new List<Func<object, ApplicationResult>>();

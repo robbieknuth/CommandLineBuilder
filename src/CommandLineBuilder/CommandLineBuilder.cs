@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public sealed class CommandLineBuilder : INonTerminalCommandWithoutSettingsBuilder<CommandLineBuilder>
     {
@@ -8,6 +8,7 @@ namespace CommandLineBuilder
 
         private readonly Command command;
         private readonly HelpOptions helpOptions;
+        private readonly ParserOptions parserOptions;
 
         public CommandLineBuilder(string applicationName)
         {
@@ -18,6 +19,7 @@ namespace CommandLineBuilder
 
             this.command = Command.CreateRoot(applicationName);
             this.helpOptions = new HelpOptions();
+            this.parserOptions = new ParserOptions();
         }
 
         public CommandLineBuilder AddNonTerminalCommand(string name, Action<NonTerminalCommandBuilder> commandBuilder)
@@ -45,6 +47,12 @@ namespace CommandLineBuilder
             where TSettings : new()
             => this.InternalAddTerminalCommandWithSettings(name, (TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> x) => { });
 
+        public CommandLineBuilder Configure(Action<ParserOptions> optionsConfigure)
+        {
+            optionsConfigure(this.parserOptions);
+            return this;
+        }
+
         public CommandLineBuilder ConfigureHelp(Action<HelpOptions> helpConfigure)
         {
             helpConfigure(this.helpOptions);
@@ -53,7 +61,7 @@ namespace CommandLineBuilder
 
         public IParser Build()
         {
-            return new Parser(this.helpOptions, this.command);
+            return new Parser(this.parserOptions, this.helpOptions, this.command);
         }
     }
 }

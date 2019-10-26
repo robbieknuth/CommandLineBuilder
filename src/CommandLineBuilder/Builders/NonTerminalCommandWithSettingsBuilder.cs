@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public sealed class NonTerminalCommandWithSettingsBuilder<TSettings> : INonTerminalCommandWithSettingsBuilder<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>
         where TSettings : new()

@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Jonathan (Robbie) Knuth</Authors>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageLicenseExpression></PackageLicenseExpression>
     <RepositoryUrl>https://github.com/robbieknuth/CommandLineBuilder</RepositoryUrl>
     <PackageProjectUrl>https://github.com/robbieknuth/CommandLineBuilder</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RootNamespace>CommandLine</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

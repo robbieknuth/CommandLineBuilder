@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public readonly struct CommandName : IEquatable<CommandName>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace CommandLineBuilder
+namespace CommandLine
 {
     public sealed class TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> 
         : ICommandWithSettingsBuilder<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>, TSettings>
