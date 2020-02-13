@@ -18,10 +18,16 @@ namespace CommandLine
         }
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.InternalAddOption(longForm, property, converter);
+            => this.InternalAddOption<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(OptionDefinition<TSettings>.Create(longForm, property, converter));
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
+            => this.InternalAddOption<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch(string longForm, Action<TSettings> applicator)
-            => this.InternalAddSwitch(longForm, applicator);
+            => this.InternalAddSwitch<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(SwitchDefinition<TSettings>.Create(longForm, applicator));
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch(string longForm, string shortForm, Action<TSettings> applicator)
+            => this.InternalAddSwitch<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
             where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()

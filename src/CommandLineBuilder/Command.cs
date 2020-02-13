@@ -15,9 +15,9 @@ namespace CommandLine
         private readonly HashSet<CommandName> existingInnerCommandNames;
         private readonly Type? entrypointType;
         private readonly Type? settingsType;
-        private readonly Dictionary<OptionName, OptionApplicator>? optionApplicators;
-        private readonly Dictionary<OptionName, Action<object>>? switchApplicators;
-        private readonly List<PositionalApplicator>? positionalApplicators;
+        private readonly Dictionary<OptionName, UntypedOptionDefinition>? optionApplicators;
+        private readonly Dictionary<OptionName, UntypedSwitchDefinition>? switchApplicators;
+        private readonly List<UntypedPositionalDefinition>? positionalApplicators;
 
         private Command(
             Command? parent,
@@ -38,12 +38,12 @@ namespace CommandLine
 
             if (this.settingsType != null)
             {
-                this.optionApplicators = new Dictionary<OptionName, OptionApplicator>();
-                this.switchApplicators = new Dictionary<OptionName, Action<object>>();
+                this.optionApplicators = new Dictionary<OptionName, UntypedOptionDefinition>();
+                this.switchApplicators = new Dictionary<OptionName, UntypedSwitchDefinition>();
 
                 if (this.entrypointType != null)
                 {
-                    this.positionalApplicators = new List<PositionalApplicator>();
+                    this.positionalApplicators = new List<UntypedPositionalDefinition>();
                 }
             }
 
@@ -104,7 +104,7 @@ namespace CommandLine
                 // this will eventually fail
             }
 
-            // consume sub commands
+            // Recursively consume if this command has children
             foreach (var tokenConsumer in this.children)
             {
                 if (tokenConsumer.TryConsume(parseContext, args, out entrypoint))
@@ -121,6 +121,8 @@ namespace CommandLine
                 // this will fail eventually
             }
 
+            // at this point there is nothing left to consume. Start error checking.
+            // error check leftover arguments
             if (args.Length > 0)
             {
                 string error;
@@ -135,6 +137,24 @@ namespace CommandLine
                 else
                 {
                     error = $"Unrecognized command: { args[0] }";
+                }
+                entrypoint = new ErrorEntrypoint(parseContext, error);
+                return true;
+            }
+
+            // If positionals exist, ensure all required ones were given a value
+            if (this.positionalApplicators != null &&
+                positionalIndex < this.positionalApplicators.Count &&
+                this.positionalApplicators[positionalIndex].Required)
+            {
+                string error;
+                if (this.positionalApplicators.Count - positionalIndex == 1)
+                {
+                    error = $"Required positional '{this.positionalApplicators[positionalIndex].Name}' was not given a value.";
+                }
+                else
+                {
+                    error = $"Required positionals '{string.Join("', '", this.positionalApplicators.Skip(positionalIndex).Select(x => x.Name)) }' were not given values.";
                 }
                 entrypoint = new ErrorEntrypoint(parseContext, error);
                 return true;
@@ -225,29 +245,41 @@ namespace CommandLine
             this.children.Add(innerCommand);
         }
 
-        internal void AddSettingFunction(OptionName optionName, Func<object, string, ApplicationResult> applicator)
+        internal void AddSettingFunction(UntypedOptionDefinition optionDefinition)
         {
             Debug.Assert(this.settingsType != null);
             Debug.Assert(this.optionApplicators != null);
 
-            EnsureOptionAndSwitchUniqueUpChain(optionName, this);
-            this.optionApplicators![optionName] = new OptionApplicator(optionName, applicator);
+            EnsureOptionAndSwitchUniqueUpChain(optionDefinition.Name, this);
+            this.optionApplicators![optionDefinition.Name] = optionDefinition;
         }
 
-        internal void AddPositionalFunction(string name, Func<object, string, ApplicationResult> applicator)
+        internal void AddPositionalFunction(UntypedPositionalDefinition positionalDefinition)
         {
             Debug.Assert(this.settingsType != null);
             Debug.Assert(this.entrypointType != null);
             Debug.Assert(this.positionalApplicators != null);
 
-            this.positionalApplicators!.Add(new PositionalApplicator(name, applicator));
+            if (positionalDefinition.Required &&
+                this.positionalApplicators.Count > 0)
+            {
+                var position = this.positionalApplicators.Count;
+                var previousPositional = this.positionalApplicators[position - 1];
+                if (!previousPositional.Required)
+                {
+                    throw new CommandStructureException(
+                        $"Positional '{positionalDefinition.Name}' is required at position {position}, however positional {previousPositional.Name} at earlier position {position - 1} is not.");
+                }
+            }
+
+            this.positionalApplicators!.Add(positionalDefinition);
         }
 
-        internal void AddSwitchFunction(OptionName switchName, Action<object> applier)
+        internal void AddSwitchFunction(UntypedSwitchDefinition switchDefitinion)
         {
             Debug.Assert(this.settingsType != null);
-            EnsureOptionAndSwitchUniqueUpChain(switchName, this);
-            this.switchApplicators![switchName] = applier;
+            EnsureOptionAndSwitchUniqueUpChain(switchDefitinion.Name, this);
+            this.switchApplicators![switchDefitinion.Name] = switchDefitinion;
         }
 
         private static void EnsureOptionAndSwitchUniqueUpChain(OptionName optionName, Command? command)
@@ -296,11 +328,11 @@ namespace CommandLine
                 return false;
             }
 
-            if (this.switchApplicators.TryGetValue(switchName, out var applicator))
+            if (this.switchApplicators.TryGetValue(switchName, out var switchDefinition))
             {
                 // consume argument name only since this is a switch
                 args = args.Slice(1);
-                parseContext.SwitchApplicators.Add((o) => applicator(o));
+                parseContext.SwitchApplicators.Add(switchDefinition.Applicator);
                 return true;
             }
 
@@ -331,7 +363,7 @@ namespace CommandLine
                 return false;
             }
 
-            if (this.optionApplicators.TryGetValue(optionName, out var applicator))
+            if (this.optionApplicators.TryGetValue(optionName, out var optionDefinition))
             {
                 if (args.Length == 1)
                 {
@@ -343,7 +375,7 @@ namespace CommandLine
 
                 // consume argument name and value
                 args = args.Slice(2);
-                parseContext.OptionApplicators.Add(applicator.Apply(value));
+                parseContext.OptionApplicators.Add(optionDefinition.ApplicatorClosureAroundValue(value));
                 return true;
             }
 
@@ -370,7 +402,7 @@ namespace CommandLine
             var value = args[0];
             args = args.Slice(1);
             var target = this.positionalApplicators[index];
-            parseContext.PositionalApplicators.Add(target.Apply(value));
+            parseContext.PositionalApplicators.Add(target.ApplicatorClosureAroundValue(value));
             index++;
             return true;
         }

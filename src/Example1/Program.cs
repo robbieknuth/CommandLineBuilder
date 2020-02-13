@@ -15,10 +15,10 @@ namespace Example1
                 .AddNonTerminalCommand("settings", settingsCommandBuilder => settingsCommandBuilder
                     .AddTerminalCommand<ListSettingsCommand>("list")
                     .AddTerminalCommandWithSettings<GetSettingCommand, GetSettingCommandSettings>("get", getSettingCommandBuilder => getSettingCommandBuilder
-                        .AddPositional("name", x => x.SettingName, Converters.Identity))
+                        .AddPositional("name", true, x => x.SettingName, Converters.Identity))
                     .AddTerminalCommandWithSettings<SetSettingCommand, SetSettingCommandSettings>("set", setSettingsCommandBuilder => setSettingsCommandBuilder
-                        .AddPositional("name", x => x.SettingName, Converters.Identity)
-                        .AddPositional("value", x => x.SettingValue, Converters.Identity)))
+                        .AddPositional("name", true, x => x.SettingName, Converters.Identity)
+                        .AddPositional("value", true, x => x.SettingValue, Converters.Identity)))
                  .AddTerminalCommandWithSettings<PrintCommand, PrintCommandSettings>("print", printCommandBuilder => printCommandBuilder
                     .AddOption("--max", x => x.Max, Converters.IntConverter)
                     .AddOption("--color", x => x.Color, Converters.EnumConverter<ConsoleColor>()))

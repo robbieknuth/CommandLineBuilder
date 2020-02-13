@@ -2,7 +2,7 @@
 
 namespace CommandLine
 {
-    public readonly struct CommandName : IEquatable<CommandName>
+    internal readonly struct CommandName : IEquatable<CommandName>
     {
         private readonly string name;
 

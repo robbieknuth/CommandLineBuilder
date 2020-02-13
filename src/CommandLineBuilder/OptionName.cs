@@ -24,17 +24,7 @@ namespace CommandLine
             this.ShortForm = shortForm?.Substring(1);
         }
 
-        public static OptionName FromLongForm(string longForm)
-        {
-            return new OptionName(longForm, null);
-        }
-        
-        public static OptionName FromShortForm(string shortForm)
-        {
-            return new OptionName(null, shortForm);
-        }
-
-        public static OptionName FromLongAndShortForm(string longForm, string shortForm)
+        public static OptionName FromLongAndShortForm(string? longForm, string? shortForm)
         {
             return new OptionName(longForm, shortForm);
         }
@@ -43,13 +33,13 @@ namespace CommandLine
         {
             if (value.StartsWith("--"))
             {
-                result = FromLongForm(value);
+                result = new OptionName(value, null);
                 return true;
             }
 
             if (value.StartsWith("-"))
             {
-                result = FromShortForm(value);
+                result = new OptionName(null, value);
                 return true;
             }
 

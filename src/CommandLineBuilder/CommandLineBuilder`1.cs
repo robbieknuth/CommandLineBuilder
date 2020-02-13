@@ -23,13 +23,39 @@ namespace CommandLine
          where TDerivedSettings : TSettings, new()
             => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
 
-        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.InternalAddOption(longForm, property, converter);
+        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(
+            string longForm,
+            Expression<Func<TSettings, TPropertyValue>> property,
+            Conversion<TPropertyValue> conversion)
+            => this.AddOption(OptionDefinition<TSettings>.Create(longForm, property, conversion));
 
-        public CommandLineBuilder<TSettings> AddSwitch(string longForm, Action<TSettings> applier)
-            => this.InternalAddSwitch(longForm, applier);
+        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(
+            string longForm,
+            string shortForm,
+            Expression<Func<TSettings, TPropertyValue>> property,
+            Conversion<TPropertyValue> conversion)
+            => this.AddOption(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
-        public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
+        public CommandLineBuilder<TSettings> AddOption(OptionDefinition<TSettings> optionDefinition)
+            => this.InternalAddOption<CommandLineBuilder<TSettings>, TSettings>(optionDefinition);
+
+        public CommandLineBuilder<TSettings> AddSwitch(
+            string longForm,
+            Action<TSettings> applicator)
+            => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, applicator));
+
+        public CommandLineBuilder<TSettings> AddSwitch(
+            string longForm,
+            string shortForm,
+            Action<TSettings> applicator)
+            => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
+
+        public CommandLineBuilder<TSettings> AddSwitch(SwitchDefinition<TSettings> switchDefinition)
+            => this.InternalAddSwitch<CommandLineBuilder<TSettings>, TSettings>(switchDefinition);
+
+        public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(
+            string name,
+            Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
             where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
             where TDerivedSettings : TSettings, new()
             => this.InternalAddTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TEntrypoint, TSettings, TDerivedSettings>(name, commandBuilder);
