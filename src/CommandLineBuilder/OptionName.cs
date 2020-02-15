@@ -5,45 +5,105 @@ namespace CommandLine
 {
     internal sealed class OptionName : IEquatable<OptionName>
     {
-        public string? LongForm { get; }
-        public string? ShortForm { get; }
+        private string Value { get; }
 
-        private OptionName(string? longForm, string? shortForm)
+        private OptionName(string value)
         {
-            if (longForm != null && !longForm.StartsWith("--"))
-            {
-                throw new CommandStructureException("Long form must start with '-'.");
-            }
-
-            if (shortForm != null && !shortForm.StartsWith("-"))
-            {
-                throw new CommandStructureException("Short form must start with '-'.");
-            }
-
-            this.LongForm = longForm?.Substring(2);
-            this.ShortForm = shortForm?.Substring(1);
+            this.Value = value;
         }
 
-        public static OptionName FromLongAndShortForm(string? longForm, string? shortForm)
+        public static OptionName FromLongForm(string? longForm)
         {
-            return new OptionName(longForm, shortForm);
+            if (longForm is null)
+            {
+                throw new ArgumentNullException(nameof(longForm));
+            }
+
+            if (!longForm.StartsWith("--"))
+            {
+                throw new ArgumentException("Long form must start with '--'.", nameof(longForm));
+            }
+
+            if (longForm.Length < 3)
+            {
+                throw new ArgumentException("Long form requires a value following '--'.", nameof(longForm));
+            }
+
+            AssertAlphaNumeric(longForm.AsSpan(2), "Long form", nameof(longForm));
+
+            return new OptionName(longForm);
         }
 
-        public static bool FromUnknownValue(string value, [NotNullWhen(true)] out OptionName? result)
+        public static OptionName FromShortForm(string? shortForm)
         {
+            if (shortForm is null)
+            {
+                throw new ArgumentNullException(nameof(shortForm));
+            }
+
+            if (!shortForm.StartsWith("-"))
+            {
+                throw new ArgumentException("Short form must start with '-'.", nameof(shortForm));
+            }
+
+            if (shortForm.Length < 2)
+            {
+                throw new ArgumentException("Short form requires a value following '-'.", nameof(shortForm));
+            }
+
+            AssertAlphaNumeric(shortForm.AsSpan(1), "Short form", nameof(shortForm));
+
+            return new OptionName(shortForm);
+        }
+
+        internal static bool FromUnknownValue(string value, [NotNullWhen(true)] out OptionName? result)
+        {
+            var span = value.AsSpan();
             if (value.StartsWith("--"))
             {
-                result = new OptionName(value, null);
+                span = span.Slice(2);
+                if (span.Length < 1)
+                {
+                    result = default;
+                    return false;
+                }
+
+                foreach (var c in span)
+                {
+                    if (!char.IsLetterOrDigit(c))
+                    {
+                        result = default;
+                        return false;
+                    }
+                }
+
+                result = new OptionName(value);
                 return true;
             }
 
             if (value.StartsWith("-"))
             {
-                result = new OptionName(null, value);
+                span = span.Slice(1);
+                if (span.Length < 1)
+                {
+                    result = default;
+                    return false;
+                }
+
+                foreach (var c in span)
+                {
+                    if (!char.IsLetterOrDigit(c))
+                    {
+                        result = default;
+                        return false;
+                    }
+                }
+
+                result = new OptionName(value);
                 return true;
             }
 
-            result = null;
+            result = default ;
             return false;
         }
 
@@ -52,56 +112,36 @@ namespace CommandLine
             return value.StartsWith("-");
         }
 
-        public bool Matches(string arg)
+        public override string ToString() => this.Value;
+
+        public override int GetHashCode() => this.Value.GetHashCode();
+
+        public override bool Equals(object? obj) => obj is OptionName opt && this.Equals(opt);
+
+        public bool Equals(OptionName other) => this.Value == other.Value;
+
+        internal static string Combine(OptionName longForm, OptionName? shortForm)
         {
-            if (arg.StartsWith("--"))
+            var result = longForm.Value;
+            if (!(shortForm is null))
             {
-                var shortFormArg = arg.AsSpan(2);
-                return this.LongForm.AsSpan().Equals(shortFormArg, StringComparison.Ordinal);
+                result += $", {shortForm.Value}";
             }
-            else if (arg.StartsWith("-"))
-            {
-                if (this.ShortForm != null)
-                {
-                    var shortFormArg = arg.AsSpan(1);
-                    return this.ShortForm.AsSpan().Equals(shortFormArg, StringComparison.Ordinal);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
 
-        public override string ToString() => this.ShortForm == null ? $"{ this.LongForm }" : $"{ this.LongForm } ( {this.ShortForm} )";
-
-        public string ToHelpString()
+        private static void AssertAlphaNumeric(
+            ReadOnlySpan<char> value,
+            string optionNameType,
+            string argName)
         {
-            if (this.ShortForm != null)
+            foreach (var c in value)
             {
-                if (this.LongForm != null)
+                if (!char.IsLetterOrDigit(c))
                 {
-                    return $"-{this.ShortForm}, --{this.LongForm}";
+                    throw new ArgumentException($"{optionNameType} cannot contain '{c}'.", argName);
                 }
-                else
-                {
-                    return $"{this.ShortForm}";
-                }
-            }
-            else
-            {
-                return $"--{this.LongForm}";
             }
         }
-
-        public override int GetHashCode() => this.LongForm?.GetHashCode() ?? this.ShortForm?.GetHashCode() ?? 0;
-
-        public override bool Equals(object? obj) => this.Equals(obj as OptionName);
-
-        public bool Equals(OptionName? other) => other != null && (this.LongForm == other.LongForm || this.ShortForm == other.ShortForm);
     }
 }

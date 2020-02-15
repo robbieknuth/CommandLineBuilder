@@ -4,15 +4,17 @@ namespace CommandLine
 {
     internal sealed class UntypedSwitchDefinition
     {
-        internal OptionName Name { get; set; }
+        public OptionName LongForm { get; }
+        public OptionName? ShortForm { get; }
+        public Action<object> Applicator { get; }
 
-        internal Action<object> Applicator { get; set; }
-
-        internal UntypedSwitchDefinition(
-            OptionName optionName,
+        public UntypedSwitchDefinition(
+            OptionName longForm,
+            OptionName? shortForm,
             Action<object> applicator)
         {
-            this.Name = optionName;
+            this.LongForm = longForm;
+            this.ShortForm = shortForm;
             this.Applicator = applicator;
         }
     }

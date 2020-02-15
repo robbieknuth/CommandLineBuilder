@@ -5,9 +5,9 @@ namespace CommandLine
 {
     public sealed class PositionalDefinition<TSettings>
     {
-        internal string Name { get; }
-        internal bool Required { get; }
-        private Func<object, string, ApplicationResult> Applicator { get; }
+        private readonly string name;
+        private readonly bool required;
+        private readonly Func<object, string, ApplicationResult> applicator;
 
         private PositionalDefinition(
             string name,
@@ -19,12 +19,12 @@ namespace CommandLine
                 throw new ArgumentNullException(nameof(name));
             }
 
-            this.Name = name;
-            this.Required = required;
-            this.Applicator = applicator ?? throw new ArgumentNullException(nameof(applicator));
+            this.name = name;
+            this.required = required;
+            this.applicator = applicator;
         }
 
-        internal UntypedPositionalDefinition ToUntyped() => new UntypedPositionalDefinition(this.Name, this.Required, this.Applicator);
+        internal UntypedPositionalDefinition ToUntyped() => new UntypedPositionalDefinition(this.name, this.required, this.applicator);
 
         public static PositionalDefinition<TSettings> Create<TPropertyValue>(
             string name,
@@ -32,6 +32,21 @@ namespace CommandLine
             Expression<Func<TSettings, TPropertyValue>> property,
             Conversion<TPropertyValue> converter)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name cannot be null or whitespace", nameof(name));
+            }
+
+            if (property is null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            if (converter is null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+
             var applicator = Converter<TPropertyValue>.CreatePositionalConverter(name, property, converter);
             return new PositionalDefinition<TSettings>(name, required, applicator);
         }

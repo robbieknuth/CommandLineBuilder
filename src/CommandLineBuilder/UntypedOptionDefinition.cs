@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Linq.Expressions;
 
 namespace CommandLine
 {
     internal sealed class UntypedOptionDefinition
     {
-        internal OptionName Name { get; }
+        public OptionName LongForm { get; }
+        public OptionName? ShortForm { get; }
         private Func<object, string, ApplicationResult> Applicator { get; }
 
         internal UntypedOptionDefinition(
-            OptionName optionName,
+            OptionName longForm,
+            OptionName? shortForm,
             Func<object, string, ApplicationResult> applicator)
         {
-            this.Name = optionName;
+            this.LongForm = longForm;
+            this.ShortForm = shortForm;
             this.Applicator = applicator;
         }
 

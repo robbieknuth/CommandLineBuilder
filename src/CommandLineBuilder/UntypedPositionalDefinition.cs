@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Linq.Expressions;
 
 namespace CommandLine
 {
     internal sealed class UntypedPositionalDefinition
     {
-        internal string Name { get; }
-        internal bool Required { get; }
+        public string Name { get; }
+        public bool Required { get; }
         private Func<object, string, ApplicationResult> Applicator { get; }
 
-        internal UntypedPositionalDefinition(
+        public UntypedPositionalDefinition(
             string name,
             bool required,
             Func<object, string, ApplicationResult> applicator)

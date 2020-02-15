@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace CommandLine
 {
-    internal class EntrypointWithSettingThunk<TSettings> : IEntrypoint
+    internal sealed class EntrypointWithSettingThunk<TSettings> : IEntrypoint
     {
         private readonly IEntrypointWithSettings<TSettings> actualEntrypoint;
         private readonly TSettings settings;

@@ -22,8 +22,8 @@ namespace CommandLine
         internal static Func<object, string, ApplicationResult> CreatePositionalConverter<TSettings>(string name, Expression<Func<TSettings, T>> property, Conversion<T> converter)
             => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for positional [{ name }].");
 
-        internal static Func<object, string, ApplicationResult> CreateOptionConverter<TSettings>(OptionName name, Expression<Func<TSettings, T>> property, Conversion<T> converter)
-            => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for option [{ name }].");
+        internal static Func<object, string, ApplicationResult> CreateOptionConverter<TSettings>(OptionName longForm, OptionName? shortForm, Expression<Func<TSettings, T>> property, Conversion<T> converter)
+            => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for option [{ CombineLongAndShortFormForError(longForm, shortForm) }].");
 
         private static Func<object, string, ApplicationResult> CreateConverter<TSettings>(
             Expression<Func<TSettings, T>> property,
@@ -53,6 +53,17 @@ namespace CommandLine
                     return ApplicationResult.FromError(error(s), result.ConversionError);
                 }
             };
+        }
+
+        private static string CombineLongAndShortFormForError(OptionName longForm, OptionName? shortForm)
+        {
+            var value = longForm.ToString();
+            if (!(shortForm is null))
+            {
+                value += $", {shortForm}";
+            }
+
+            return value;
         }
     }
 }

@@ -265,8 +265,12 @@ namespace CommandLine
             Debug.Assert(this.settingsType != null);
             Debug.Assert(this.optionApplicators != null);
 
-            EnsureOptionAndSwitchUniqueUpChain(optionDefinition.Name, this);
-            this.optionApplicators![optionDefinition.Name] = optionDefinition;
+            EnsureOptionAndSwitchUniqueUpChain(optionDefinition.LongForm, optionDefinition.ShortForm, this);
+            this.optionApplicators![optionDefinition.LongForm] = optionDefinition;
+            if (!(optionDefinition.ShortForm is null))
+            {
+                this.optionApplicators![optionDefinition.ShortForm] = optionDefinition;
+            }
         }
 
         internal void AddPositionalFunction(UntypedPositionalDefinition positionalDefinition)
@@ -294,8 +298,12 @@ namespace CommandLine
         {
             Debug.Assert(this.settingsType != null);
             Debug.Assert(this.switchApplicators != null);
-            EnsureOptionAndSwitchUniqueUpChain(switchDefitinion.Name, this);
-            this.switchApplicators![switchDefitinion.Name] = switchDefitinion;
+            EnsureOptionAndSwitchUniqueUpChain(switchDefitinion.LongForm, switchDefitinion.ShortForm, this);
+            this.switchApplicators![switchDefitinion.LongForm] = switchDefitinion;
+            if (!(switchDefitinion.ShortForm is null))
+            {
+                this.switchApplicators![switchDefitinion.ShortForm] = switchDefitinion;
+            }
         }
 
         internal void AddSettingDefault(UntypedSettingDefaultDefinition untypedSettingDefaultDefinition)
@@ -305,26 +313,35 @@ namespace CommandLine
             this.settingDefaultApplicators!.Add(untypedSettingDefaultDefinition);
         }
 
-        private static void EnsureOptionAndSwitchUniqueUpChain(OptionName optionName, Command? command)
+        private static void EnsureOptionAndSwitchUniqueUpChain(OptionName longForm, OptionName? shortForm, Command? command)
         {
             if (command == null || command.optionApplicators == null || command.switchApplicators == null)
             {
                 return;
             }
 
-            if (command.optionApplicators.ContainsKey(optionName))
+            if (command.optionApplicators.ContainsKey(longForm))
             {
-                // find the actual existing option
-                var existingOptionName = command.optionApplicators.Keys.First(x => x.Equals(optionName));
-                throw new CommandStructureException($"Option or switch '{ optionName }' already has a setting function '{ existingOptionName }' in command '{ command.name }'.");
+                var existingOptionName = command.optionApplicators.Keys.First(x => x.Equals(longForm));
+                throw new CommandStructureException($"Option or switch '{ longForm }' already has a setting function '{ existingOptionName }' in command '{ command.name }'.");
             }
-            else if (command.switchApplicators.ContainsKey(optionName))
+            else if (!(shortForm is null) && command.optionApplicators.ContainsKey(shortForm))
             {
-                var existingSwitchName = command.switchApplicators.Keys.First(x => x.Equals(optionName));
-                throw new CommandStructureException($"Option or switch '{ optionName }' already has a switch '{ existingSwitchName }' in command '{ command.name }'.");
+                var existingOptionName = command.optionApplicators.Keys.First(x => x.Equals(shortForm));
+                throw new CommandStructureException($"Option or switch '{ shortForm }' already has a setting function '{ existingOptionName }' in command '{ command.name }'.");
+            }
+            else if (command.switchApplicators.ContainsKey(longForm))
+            {
+                var existingSwitchName = command.switchApplicators.Keys.First(x => x.Equals(longForm));
+                throw new CommandStructureException($"Option or switch '{ longForm }' already has a switch '{ existingSwitchName }' in command '{ command.name }'.");
+            }
+            else if (!(shortForm is null) && command.switchApplicators.ContainsKey(shortForm))
+            {
+                var existingSwitchName = command.switchApplicators.Keys.First(x => x.Equals(shortForm));
+                throw new CommandStructureException($"Option or switch '{ shortForm }' already has a switch '{ existingSwitchName }' in command '{ command.name }'.");
             }
 
-            EnsureOptionAndSwitchUniqueUpChain(optionName, command.parent);
+            EnsureOptionAndSwitchUniqueUpChain(longForm, shortForm, command.parent);
         }
 
         private bool TryConsumeSwitch(ParseContext parseContext, ref ReadOnlySpan<string> args)
@@ -339,7 +356,7 @@ namespace CommandLine
                 return false;
             }
 
-            return this.parent?.TryConsumeSwitchRec(switchName!, parseContext, ref args) ?? false;
+            return this.TryConsumeSwitchRec(switchName!, parseContext, ref args);
         }
 
         private bool TryConsumeSwitchRec(OptionName switchName, ParseContext parseContext, ref ReadOnlySpan<string> args)
@@ -495,17 +512,17 @@ namespace CommandLine
 
             if (this.switchApplicators != null)
             {
-                foreach (var switchApplicator in this.switchApplicators)
+                foreach (var applicator in this.switchApplicators.Values.Distinct())
                 {
-                    stringBuilder.AppendLine($"    { switchApplicator.Key.ToHelpString() }");
+                    stringBuilder.AppendLine($"    { OptionName.Combine(applicator.LongForm, applicator.ShortForm) }");
                 }
             }
 
             if (this.optionApplicators != null)
             {
-                foreach (var valueApplicator in this.optionApplicators)
+                foreach (var applicator in this.optionApplicators.Values.Distinct())
                 {
-                    stringBuilder.AppendLine($"    { valueApplicator.Key.ToHelpString() }");
+                    stringBuilder.AppendLine($"    { OptionName.Combine(applicator.LongForm, applicator.ShortForm) }");
                 }
             }
 

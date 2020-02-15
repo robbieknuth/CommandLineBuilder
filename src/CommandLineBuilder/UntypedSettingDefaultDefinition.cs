@@ -4,9 +4,9 @@ namespace CommandLine
 {
     internal sealed class UntypedSettingDefaultDefinition
     {
-        internal Action<object> Applicator { get; }
+        public Action<object> Applicator { get; }
 
-        internal UntypedSettingDefaultDefinition(Action<object> applicator)
+        public UntypedSettingDefaultDefinition(Action<object> applicator)
         {
             this.Applicator = applicator;
         }
