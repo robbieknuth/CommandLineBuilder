@@ -7,8 +7,6 @@ namespace CommandLine
         public Action<object> Applicator { get; }
 
         public UntypedSettingDefaultDefinition(Action<object> applicator)
-        {
-            this.Applicator = applicator;
-        }
+        => this.Applicator = applicator;
     }
 }

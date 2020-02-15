@@ -19,8 +19,6 @@ namespace CommandLine
         }
 
         internal Func<object, ApplicationResult> ApplicatorClosureAroundValue(string value)
-        {
-            return (o) => this.Applicator(o, value);
-        }
+        => (o) => this.Applicator(o, value);
     }
 }

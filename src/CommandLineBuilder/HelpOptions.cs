@@ -1,13 +1,12 @@
-﻿using System;
-
-namespace CommandLine
+﻿namespace CommandLine
 {
     public sealed class HelpOptions
     {
         internal bool ShouldFailWithException { get; private set; }
         internal int ExitCode { get; private set; }
 
-        internal HelpOptions() => this.FailWithOutput();
+        internal HelpOptions()
+        => this.FailWithOutput();
 
         public HelpOptions FailWithException()
         {

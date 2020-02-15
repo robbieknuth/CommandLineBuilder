@@ -67,13 +67,9 @@ namespace CommandLine
         }
 
         public static ApplicationResult FromError(string error, string? detail)
-        {
-            return new ApplicationResult(false, error, detail);
-        }
+        => new ApplicationResult(false, error, detail);
 
         public static ApplicationResult FromSuccess()
-        {
-            return new ApplicationResult(true, default, default);
-        }
+        => new ApplicationResult(true, default, default);
     }
 }

@@ -68,8 +68,10 @@ namespace CommandLine
             this.isSuccess = success;
         }
 
-        public static ConversionResult<T> Success(T value) => new ConversionResult<T>(value, default, true);
+        public static ConversionResult<T> Success(T value)
+        => new ConversionResult<T>(value, default, true);
 
-        public static ConversionResult<T> Failure(string error) => new ConversionResult<T>(default, error, false); 
+        public static ConversionResult<T> Failure(string error)
+        => new ConversionResult<T>(default, error, false); 
     }
 }

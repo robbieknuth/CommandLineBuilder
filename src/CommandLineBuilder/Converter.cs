@@ -15,15 +15,13 @@ namespace CommandLine
         public ConversionResult<T> Convert(string input) => this.converter(input);
 
         public static implicit operator Converter<T>(Func<string, ConversionResult<T>> converter)
-        {
-            return new Converter<T>(converter);
-        }
+        => new Converter<T>(converter);
 
         internal static Func<object, string, ApplicationResult> CreatePositionalConverter<TSettings>(string name, Expression<Func<TSettings, T>> property, Conversion<T> converter)
-            => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for positional [{ name }].");
+        => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for positional [{ name }].");
 
         internal static Func<object, string, ApplicationResult> CreateOptionConverter<TSettings>(OptionName longForm, OptionName? shortForm, Expression<Func<TSettings, T>> property, Conversion<T> converter)
-            => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for option [{ CombineLongAndShortFormForError(longForm, shortForm) }].");
+        => CreateConverter<TSettings>(property, converter, s => $"Value '{ s }' was not convertable for option [{ CombineLongAndShortFormForError(longForm, shortForm) }].");
 
         private static Func<object, string, ApplicationResult> CreateConverter<TSettings>(
             Expression<Func<TSettings, T>> property,

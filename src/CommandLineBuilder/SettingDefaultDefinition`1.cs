@@ -7,10 +7,8 @@ namespace CommandLine
         private readonly Action<TSettings> applicator;
 
         private SettingDefaultDefinition(Action<TSettings> applicator)
-        {
-            this.applicator = applicator;
-        }
-        
+        => this.applicator = applicator;
+
         public static SettingDefaultDefinition<TSettings> Create(Action<TSettings> applicator)
         {
             if (applicator is null)
@@ -21,7 +19,7 @@ namespace CommandLine
             return new SettingDefaultDefinition<TSettings>(applicator);
         }
 
-        internal UntypedSettingDefaultDefinition ToUntyped() => 
-            new UntypedSettingDefaultDefinition(o => this.applicator((TSettings)o));
+        internal UntypedSettingDefaultDefinition ToUntyped()
+        => new UntypedSettingDefaultDefinition(o => this.applicator((TSettings)o));
     }
 }

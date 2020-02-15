@@ -24,8 +24,6 @@ namespace CommandLine
             this.applicator = applicator;
         }
 
-        internal UntypedPositionalDefinition ToUntyped() => new UntypedPositionalDefinition(this.name, this.required, this.applicator);
-
         public static PositionalDefinition<TSettings> Create<TPropertyValue>(
             string name,
             bool required,
@@ -50,5 +48,8 @@ namespace CommandLine
             var applicator = Converter<TPropertyValue>.CreatePositionalConverter(name, property, converter);
             return new PositionalDefinition<TSettings>(name, required, applicator);
         }
+
+        internal UntypedPositionalDefinition ToUntyped()
+        => new UntypedPositionalDefinition(this.name, this.required, this.applicator);
     }
 }

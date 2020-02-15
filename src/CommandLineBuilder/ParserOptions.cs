@@ -8,8 +8,6 @@ namespace CommandLine
         public int ErrorCode { get; set; }
 
         internal ParserOptions()
-        {
-            this.OutputHandler = Console.Write;
-        }
+        => this.OutputHandler = Console.Write;
     }
 }

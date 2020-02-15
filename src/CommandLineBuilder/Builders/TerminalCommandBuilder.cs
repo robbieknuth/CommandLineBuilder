@@ -8,12 +8,8 @@ namespace CommandLine
 
         private readonly Command command;
 
-        internal TerminalCommandBuilder(
-            Command parent,
-            string name)
-        {
-            this.command = Command.CreateChild(parent, name, typeof(TEntrypoint), null);
-        }
+        internal TerminalCommandBuilder(Command parent, string name)
+        => this.command = Command.CreateChild(parent, name, typeof(TEntrypoint), null);
 
         internal Command Build(Action<TerminalCommandBuilder<TEntrypoint>> builderAction)
         {

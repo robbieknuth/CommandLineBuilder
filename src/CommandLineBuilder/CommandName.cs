@@ -7,9 +7,7 @@ namespace CommandLine
         private readonly string name;
 
         private CommandName(string name)
-        {
-            this.name = name;
-        }
+        => this.name = name;
 
         public override string ToString() => this.name;
 
@@ -34,14 +32,15 @@ namespace CommandLine
         }
 
         public static CommandName FromApplicationName(string name)
-        {
-            return new CommandName(name);
-        }
+        => new CommandName(name);
 
-        public override int GetHashCode() => this.name?.GetHashCode() ?? 0;
+        public override int GetHashCode()
+        => this.name?.GetHashCode() ?? 0;
 
-        public override bool Equals(object? obj) => obj is CommandName val && Equals(this, val);
+        public override bool Equals(object? obj)
+        => obj is CommandName val && Equals(this, val);
 
-        public bool Equals(CommandName other) => string.Equals(this.name, other.name);
+        public bool Equals(CommandName other)
+        => string.Equals(this.name, other.name);
     }
 }

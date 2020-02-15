@@ -24,9 +24,8 @@ namespace CommandLine
             this.shortForm,
             o => this.Applicator((TSettings)o));
 
-        public static SwitchDefinition<TSettings> Create(
-            string longForm,
-            Action<TSettings> applicator) => Create(longForm, null, applicator);
+        public static SwitchDefinition<TSettings> Create(string longForm, Action<TSettings> applicator)
+        => Create(longForm, null, applicator);
 
         public static SwitchDefinition<TSettings> Create(
             string longForm,

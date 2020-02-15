@@ -17,6 +17,6 @@ namespace CommandLine
         }
 
         public Task<int> RunAsync(CancellationToken cancellationToken)
-            => this.actualEntrypoint.RunAsync(this.settings, cancellationToken);
+        => this.actualEntrypoint.RunAsync(this.settings, cancellationToken);
     }
 }

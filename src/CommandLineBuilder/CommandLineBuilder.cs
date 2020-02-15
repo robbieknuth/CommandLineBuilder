@@ -2,7 +2,9 @@
 
 namespace CommandLine
 {
-    public sealed class CommandLineBuilder : INonTerminalCommandWithoutSettingsBuilder<CommandLineBuilder>
+    public sealed class CommandLineBuilder : 
+        INonTerminalCommandWithoutSettingsBuilder<CommandLineBuilder>,
+        ICommandBuilder
     {
         Command ICommandBuilder.Command => this.command;
 
@@ -22,30 +24,37 @@ namespace CommandLine
             this.parserOptions = new ParserOptions();
         }
 
+        public CommandLineBuilder AddNonTerminalCommand(string name)
+        => this.AddNonTerminalCommand(name, _ => {});
+
         public CommandLineBuilder AddNonTerminalCommand(string name, Action<NonTerminalCommandBuilder> commandBuilder)
-            => this.InternalAddNonTerminalCommand(name, commandBuilder);
+        => this.InternalAddNonTerminalCommand(name, commandBuilder);
+
+        public CommandLineBuilder AddNonTerminalCommandWithSettings<TSettings>(string name)
+            where TSettings : new()
+        => this.AddNonTerminalCommandWithSettings<TSettings>(name, _ => {});
 
         public CommandLineBuilder AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
             where TSettings : new()
-            => this.InternalAddNonTerminalCommandWithSettings(name, commandBuilder);
+        => this.InternalAddNonTerminalCommandWithSettings(name, commandBuilder);
+        
+        public CommandLineBuilder AddTerminalCommand<TEntrypoint>(string name)
+            where TEntrypoint : IEntrypoint, new()
+        => this.AddTerminalCommand<TEntrypoint>(name, _ => {});
 
         public CommandLineBuilder AddTerminalCommand<TEntrypoint>(string name, Action<TerminalCommandBuilder<TEntrypoint>> commandBuilder)
             where TEntrypoint : IEntrypoint, new()
-            => this.InternalAddTerminalCommand(name, commandBuilder);
-
-        public CommandLineBuilder AddTerminalCommand<TEntrypoint>(string name)
-            where TEntrypoint : IEntrypoint, new()
-            => this.InternalAddTerminalCommand(name, (TerminalCommandBuilder<TEntrypoint> x) => { });
+        => this.InternalAddTerminalCommand(name, commandBuilder);
+        
+        public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name)
+            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TSettings : new()
+        => this.AddTerminalCommandWithSettings<TEntrypoint, TSettings>(name, _ => {});
 
         public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder) 
             where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
             where TSettings : new()
-            => this.InternalAddTerminalCommandWithSettings(name, commandBuilder);
-
-        public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
-            where TSettings : new()
-            => this.InternalAddTerminalCommandWithSettings(name, (TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> x) => { });
+        => this.InternalAddTerminalCommandWithSettings(name, commandBuilder);
 
         public CommandLineBuilder WithDefaultEntrypoint<TEntrypoint>()
             where TEntrypoint : IEntrypoint
@@ -77,8 +86,6 @@ namespace CommandLine
         }
 
         public IParser Build()
-        {
-            return new Parser(this.parserOptions, this.helpOptions, this.command);
-        }
+        => new Parser(this.parserOptions, this.helpOptions, this.command);
     }
 }

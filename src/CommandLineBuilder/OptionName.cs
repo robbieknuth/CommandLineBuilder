@@ -112,13 +112,17 @@ namespace CommandLine
             return value.StartsWith("-");
         }
 
-        public override string ToString() => this.Value;
+        public override string ToString()
+        => this.Value;
 
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int GetHashCode()
+        => this.Value.GetHashCode();
 
-        public override bool Equals(object? obj) => obj is OptionName opt && this.Equals(opt);
+        public override bool Equals(object? obj)
+        => obj is OptionName opt && this.Equals(opt);
 
-        public bool Equals(OptionName other) => this.Value == other.Value;
+        public bool Equals(OptionName other)
+        => this.Value == other.Value;
 
         internal static string Combine(OptionName longForm, OptionName? shortForm)
         {

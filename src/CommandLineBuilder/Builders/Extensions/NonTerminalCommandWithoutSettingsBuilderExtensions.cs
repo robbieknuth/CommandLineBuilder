@@ -5,7 +5,7 @@ namespace CommandLine
     internal static class NonTerminalCommandWithoutSettingsBuilderExtensions
     {
         public static T InternalAddTerminalCommand<T, TEntrypoint>(this T item, string commandName, Action<TerminalCommandBuilder<TEntrypoint>> commandBuilder)
-            where T : INonTerminalCommandWithoutSettingsBuilder<T>
+            where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
             where TEntrypoint : IEntrypoint, new()
         {
             ValidateCommandName(commandName);
@@ -20,7 +20,7 @@ namespace CommandLine
         }
 
         public static T InternalAddNonTerminalCommand<T>(this T item, string commandName, Action<NonTerminalCommandBuilder> commandBuilder)
-            where T : INonTerminalCommandWithoutSettingsBuilder<T>
+            where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
         {
             ValidateCommandName(commandName);
             if (commandBuilder is null)
@@ -34,7 +34,7 @@ namespace CommandLine
         }
 
         public static T InternalAddTerminalCommandWithSettings<T, TEntrypoint, TSettings>(this T item, string commandName, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder)
-            where T : INonTerminalCommandWithoutSettingsBuilder<T>
+            where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
             where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
             where TSettings : new()
         {
@@ -44,15 +44,13 @@ namespace CommandLine
                 throw new ArgumentNullException(nameof(commandBuilder));
             }
 
-            var builder = new TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>(
-                item.Command,
-                commandName);
+            var builder = new TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>(item.Command, commandName);
             item.Command.AddSubCommand(builder.Build(commandBuilder));
             return item;
         }
 
         public static T InternalAddNonTerminalCommandWithSettings<T, TSettings>(this T item, string commandName, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
-            where T : INonTerminalCommandWithoutSettingsBuilder<T>
+            where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
             where TSettings : new()
         {
             ValidateCommandName(commandName);
@@ -61,9 +59,7 @@ namespace CommandLine
                 throw new ArgumentNullException(nameof(commandBuilder));
             }
 
-            var builder = new NonTerminalCommandWithSettingsBuilder<TSettings>(
-                item.Command,
-                commandName);
+            var builder = new NonTerminalCommandWithSettingsBuilder<TSettings>(item.Command, commandName);
             item.Command.AddSubCommand(builder.Build(commandBuilder));
             return item;
         }

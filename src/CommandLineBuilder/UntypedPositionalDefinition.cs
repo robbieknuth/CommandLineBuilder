@@ -13,19 +13,12 @@ namespace CommandLine
             bool required,
             Func<object, string, ApplicationResult> applicator)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             this.Name = name;
             this.Required = required;
             this.Applicator = applicator ?? throw new ArgumentNullException(nameof(applicator));
         }
 
         internal Func<object, ApplicationResult> ApplicatorClosureAroundValue(string value)
-        {
-            return (o) => this.Applicator(o, value);
-        }
+        => (o) => this.Applicator(o, value);
     }
 }

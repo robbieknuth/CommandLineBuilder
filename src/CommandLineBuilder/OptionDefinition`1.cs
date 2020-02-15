@@ -20,7 +20,7 @@ namespace CommandLine
         }
 
         internal UntypedOptionDefinition ToUntyped() 
-            => new UntypedOptionDefinition(this.longForm, this.shortForm, this.applicator);
+        => new UntypedOptionDefinition(this.longForm, this.shortForm, this.applicator);
 
         public static OptionDefinition<TSettings> Create<TPropertyValue>(
             string longForm,
