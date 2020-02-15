@@ -18,11 +18,11 @@ namespace CommandLine
             this.command = Command.CreateChild(parent, name, null, typeof(TSettings));
         }
 
-        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, converter));
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> conversion)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, conversion));
 
-        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> conversion)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(OptionDefinition<TSettings> optionDefinition)
             => this.InternalAddOption(optionDefinition);

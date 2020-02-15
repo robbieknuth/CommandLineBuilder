@@ -34,7 +34,7 @@ namespace CommandLine
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Name cannot be null or whitespace", nameof(name));
+                throw new ArgumentException("Positional name cannot be null or whitespace", nameof(name));
             }
 
             if (property is null)

@@ -19,11 +19,11 @@ namespace CommandLine
             this.command = Command.CreateChild(parent, name, typeof(TEntrypoint), typeof(TSettings));
         }
 
-        public TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, converter));
+        public TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> conversion)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, conversion));
 
-        public TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
+        public TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> conversion)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
         public TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TPropertyValue>(OptionDefinition<TSettings> optionDefinition)
             => this.InternalAddOption(optionDefinition);

@@ -45,7 +45,7 @@ namespace CommandLine
                 shortFormOptionName = OptionName.FromShortForm(shortForm);
             }
 
-            return new SwitchDefinition<TSettings>(longFormOptionName, shortFormOptionName, o => applicator(o));
+            return new SwitchDefinition<TSettings>(longFormOptionName, shortFormOptionName, applicator);
         }
     }
 }
