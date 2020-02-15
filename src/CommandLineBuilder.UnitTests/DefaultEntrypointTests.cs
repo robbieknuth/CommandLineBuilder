@@ -57,7 +57,7 @@ namespace CommandLine.UnitTests
             }
         }
 
-        private class SecondaryWithSettings : IEntrypointWithSettings<Settings>
+        private class SecondaryWithSettings : IEntrypoint<Settings>
         {
             public Task<int> RunAsync(Settings settings, CancellationToken cancellationToken)
             {
@@ -65,7 +65,7 @@ namespace CommandLine.UnitTests
             }
         }
         
-        private class EntrypointWithSettings : IEntrypointWithSettings<Settings>
+        private class EntrypointWithSettings : IEntrypoint<Settings>
         {
             public Task<int> RunAsync(Settings settings, CancellationToken cancellationToken)
             {

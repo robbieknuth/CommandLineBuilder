@@ -1,7 +1,7 @@
 ﻿namespace CommandLine
 {
-    public interface ICommandWithSettingsBuilder<T, TSettings>
-        where T : ICommandWithSettingsBuilder<T, TSettings>
+    public interface ICommandBuilder<T, TSettings>
+        where T : ICommandBuilder<T, TSettings>
         where TSettings : new()
     {
         T AddOption(OptionDefinition<TSettings> optionDefinition);

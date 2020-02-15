@@ -43,74 +43,74 @@ namespace CommandLine
             where TSettings : new()
         => commandLineBuilder.AddOption(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
-        public static TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddSwitch<TEntrypoint, TSettings>(
-            this TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> commandBuilder,
+        public static TerminalCommandBuilder<TEntrypoint, TSettings> AddSwitch<TEntrypoint, TSettings>(
+            this TerminalCommandBuilder<TEntrypoint, TSettings> commandBuilder,
             string longForm,
             Action<TSettings> applicator)
             where TSettings : new()
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
         => commandBuilder.AddSwitch(longForm, null, applicator);
 
-        public static TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddSwitch<TEntrypoint, TSettings>(
-            this TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> commandBuilder,
+        public static TerminalCommandBuilder<TEntrypoint, TSettings> AddSwitch<TEntrypoint, TSettings>(
+            this TerminalCommandBuilder<TEntrypoint, TSettings> commandBuilder,
             string longForm,
             string? shortForm,
             Action<TSettings> applicator)
             where TSettings : new()
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
         => commandBuilder.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
 
-        public static TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TEntrypoint, TSettings, TPropertyValue>(
-            this TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> commandBuilder,
+        public static TerminalCommandBuilder<TEntrypoint, TSettings> AddOption<TEntrypoint, TSettings, TPropertyValue>(
+            this TerminalCommandBuilder<TEntrypoint, TSettings> commandBuilder,
             string longForm,
             Expression<Func<TSettings, TPropertyValue>> property,
             Conversion<TPropertyValue> conversion)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => commandBuilder.AddOption(longForm, null, property, conversion);
 
-        public static TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddOption<TEntrypoint, TSettings, TPropertyValue>(
-            this TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> commandBuilder,
+        public static TerminalCommandBuilder<TEntrypoint, TSettings> AddOption<TEntrypoint, TSettings, TPropertyValue>(
+            this TerminalCommandBuilder<TEntrypoint, TSettings> commandBuilder,
             string longForm,
             string? shortForm,
             Expression<Func<TSettings, TPropertyValue>> property,
             Conversion<TPropertyValue> conversion)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => commandBuilder.AddOption(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
-        public static TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> AddSettingDefault<TEntrypoint, TSettings>(
-            this TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> commandBuilder,
+        public static TerminalCommandBuilder<TEntrypoint, TSettings> AddSettingDefault<TEntrypoint, TSettings>(
+            this TerminalCommandBuilder<TEntrypoint, TSettings> commandBuilder,
             Action<TSettings> applicator)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => commandBuilder.AddSettingDefault(SettingDefaultDefinition<TSettings>.Create(applicator));
 
-        public static NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch<TSettings>(
-            this NonTerminalCommandWithSettingsBuilder<TSettings> commandBuilder,
+        public static NonTerminalCommandBuilder<TSettings> AddSwitch<TSettings>(
+            this NonTerminalCommandBuilder<TSettings> commandBuilder,
             string longForm,
             Action<TSettings> applicator)
             where TSettings : new()
         => commandBuilder.AddSwitch(longForm, null, applicator);
 
-        public static NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch<TSettings>(
-            this NonTerminalCommandWithSettingsBuilder<TSettings> commandBuilder,
+        public static NonTerminalCommandBuilder<TSettings> AddSwitch<TSettings>(
+            this NonTerminalCommandBuilder<TSettings> commandBuilder,
             string longForm,
             string? shortForm,
             Action<TSettings> applicator)
             where TSettings : new()
         => commandBuilder.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
 
-        public static NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TSettings, TPropertyValue>(
-            this NonTerminalCommandWithSettingsBuilder<TSettings> commandBuilder,
+        public static NonTerminalCommandBuilder<TSettings> AddOption<TSettings, TPropertyValue>(
+            this NonTerminalCommandBuilder<TSettings> commandBuilder,
             string longForm,
             Expression<Func<TSettings, TPropertyValue>> property,
             Conversion<TPropertyValue> conversion)
             where TSettings : new()
         => commandBuilder.AddOption(longForm, null, property, conversion);
 
-        public static NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TSettings, TPropertyValue>(
-            this NonTerminalCommandWithSettingsBuilder<TSettings> commandBuilder,
+        public static NonTerminalCommandBuilder<TSettings> AddOption<TSettings, TPropertyValue>(
+            this NonTerminalCommandBuilder<TSettings> commandBuilder,
             string longForm,
             string? shortForm,
             Expression<Func<TSettings, TPropertyValue>> property,
@@ -118,8 +118,8 @@ namespace CommandLine
             where TSettings : new()
         => commandBuilder.AddOption(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
 
-        public static NonTerminalCommandWithSettingsBuilder<TSettings> AddSettingDefault<TSettings>(
-            this NonTerminalCommandWithSettingsBuilder<TSettings> commandBuilder,
+        public static NonTerminalCommandBuilder<TSettings> AddSettingDefault<TSettings>(
+            this NonTerminalCommandBuilder<TSettings> commandBuilder,
             Action<TSettings> applicator)
             where TSettings : new()
         => commandBuilder.AddSettingDefault(SettingDefaultDefinition<TSettings>.Create(applicator));

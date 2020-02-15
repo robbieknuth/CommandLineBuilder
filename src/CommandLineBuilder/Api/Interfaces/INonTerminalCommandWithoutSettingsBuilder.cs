@@ -2,7 +2,7 @@
 
 namespace CommandLine
 {
-    internal interface INonTerminalCommandWithoutSettingsBuilder<T>
+    public interface INonTerminalCommandWithoutSettingsBuilder<T>
         where T : INonTerminalCommandWithoutSettingsBuilder<T>
     {
         T AddNonTerminalCommand(string name);
@@ -14,13 +14,13 @@ namespace CommandLine
             where TEntrypoint : IEntrypoint, new();
         T AddNonTerminalCommandWithSettings<TSettings>(string name)
             where TSettings : new();
-        T AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
+        T AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandBuilder<TSettings>> commandBuilder)
             where TSettings : new();
         T AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new();
-        T AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+        T AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandBuilder<TEntrypoint, TSettings>> commandBuilder)
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new();
     }
 }

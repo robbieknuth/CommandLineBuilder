@@ -6,7 +6,7 @@ using Example1.CommandSettings;
 
 namespace Example1.Commands
 {
-    class PrintCommand : IEntrypointWithSettings<PrintCommandSettings>
+    class PrintCommand : IEntrypoint<PrintCommandSettings>
     {
         public async Task<int> RunAsync(PrintCommandSettings commandSettings, CancellationToken cancellationToken)
         {

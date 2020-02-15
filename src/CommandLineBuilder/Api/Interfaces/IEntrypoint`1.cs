@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace CommandLine
 {
-    public interface IEntrypointWithSettings<TSettings>
+    public interface IEntrypoint<TSettings>
     {
         Task<int> RunAsync(TSettings settings, CancellationToken cancellationToken);
     }

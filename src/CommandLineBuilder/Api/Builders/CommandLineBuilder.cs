@@ -34,7 +34,7 @@ namespace CommandLine
             where TSettings : new()
         => this.AddNonTerminalCommandWithSettings<TSettings>(name, _ => {});
 
-        public CommandLineBuilder AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
+        public CommandLineBuilder AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandBuilder<TSettings>> commandBuilder)
             where TSettings : new()
         => this.InternalAddNonTerminalCommandWithSettings(name, commandBuilder);
         
@@ -47,12 +47,12 @@ namespace CommandLine
         => this.InternalAddTerminalCommand(name, commandBuilder);
         
         public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => this.AddTerminalCommandWithSettings<TEntrypoint, TSettings>(name, _ => {});
 
-        public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder) 
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+        public CommandLineBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandBuilder<TEntrypoint, TSettings>> commandBuilder) 
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => this.InternalAddTerminalCommandWithSettings(name, commandBuilder);
 

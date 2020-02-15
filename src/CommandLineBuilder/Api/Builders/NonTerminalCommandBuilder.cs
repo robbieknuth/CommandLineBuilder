@@ -23,7 +23,7 @@ namespace CommandLine
             where TSettings : new()
         => this.AddNonTerminalCommandWithSettings<TSettings>(name, _ => {});
 
-        public NonTerminalCommandBuilder AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
+        public NonTerminalCommandBuilder AddNonTerminalCommandWithSettings<TSettings>(string name, Action<NonTerminalCommandBuilder<TSettings>> commandBuilder)
             where TSettings : new()
         => this.InternalAddNonTerminalCommandWithSettings(name, commandBuilder);
 
@@ -35,15 +35,15 @@ namespace CommandLine
             where TEntrypoint : IEntrypoint, new()
         => this.InternalAddTerminalCommand(name, (TerminalCommandBuilder<TEntrypoint> x) => { });
 
-        public NonTerminalCommandBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+        public NonTerminalCommandBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name, Action<TerminalCommandBuilder<TEntrypoint, TSettings>> commandBuilder)
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         => this.InternalAddTerminalCommandWithSettings(name, commandBuilder);
 
         public NonTerminalCommandBuilder AddTerminalCommandWithSettings<TEntrypoint, TSettings>(string name)
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
-        => this.InternalAddTerminalCommandWithSettings(name, (TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> x) => { });
+        => this.InternalAddTerminalCommandWithSettings(name, (TerminalCommandBuilder<TEntrypoint, TSettings> x) => { });
 
         internal Command Build(Action<NonTerminalCommandBuilder> builderAction)
         {

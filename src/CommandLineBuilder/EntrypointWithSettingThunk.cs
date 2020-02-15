@@ -5,11 +5,11 @@ namespace CommandLine
 {
     internal sealed class EntrypointWithSettingThunk<TSettings> : IEntrypoint
     {
-        private readonly IEntrypointWithSettings<TSettings> actualEntrypoint;
+        private readonly IEntrypoint<TSettings> actualEntrypoint;
         private readonly TSettings settings;
 
         public EntrypointWithSettingThunk(
-            IEntrypointWithSettings<TSettings> actualEntrypoint,
+            IEntrypoint<TSettings> actualEntrypoint,
             TSettings settings)
         {
             this.actualEntrypoint = actualEntrypoint;

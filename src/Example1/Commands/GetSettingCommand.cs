@@ -6,7 +6,7 @@ using Example1.CommandSettings;
 
 namespace Example1.Commands
 {
-    class GetSettingCommand : IEntrypointWithSettings<GetSettingCommandSettings>
+    class GetSettingCommand : IEntrypoint<GetSettingCommandSettings>
     {
         public async Task<int> RunAsync(GetSettingCommandSettings commandSettings, CancellationToken cancellationToken)
         {

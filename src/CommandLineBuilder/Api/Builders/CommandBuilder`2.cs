@@ -1,7 +1,7 @@
 namespace CommandLine
 {
-    public abstract class CommandWithSettingsBuilder<T, TSettings> : ICommandWithSettingsBuilder<T, TSettings>, ICommandBuilder
-        where T : ICommandWithSettingsBuilder<T, TSettings>
+    public abstract class CommandWithSettingsBuilder<T, TSettings> : ICommandBuilder<T, TSettings>, ICommandBuilder
+        where T : ICommandBuilder<T, TSettings>
         where TSettings : new()
     {
         Command ICommandBuilder.Command => this.command;

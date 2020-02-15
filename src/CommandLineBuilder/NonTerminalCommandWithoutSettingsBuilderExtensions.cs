@@ -33,9 +33,9 @@ namespace CommandLine
             return item;
         }
 
-        public static T InternalAddTerminalCommandWithSettings<T, TEntrypoint, TSettings>(this T item, string commandName, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>> commandBuilder)
+        public static T InternalAddTerminalCommandWithSettings<T, TEntrypoint, TSettings>(this T item, string commandName, Action<TerminalCommandBuilder<TEntrypoint, TSettings>> commandBuilder)
             where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
-            where TEntrypoint : IEntrypointWithSettings<TSettings>, new()
+            where TEntrypoint : IEntrypoint<TSettings>, new()
             where TSettings : new()
         {
             ValidateCommandName(commandName);
@@ -44,12 +44,12 @@ namespace CommandLine
                 throw new ArgumentNullException(nameof(commandBuilder));
             }
 
-            var builder = new TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings>(item.Command, commandName);
+            var builder = new TerminalCommandBuilder<TEntrypoint, TSettings>(item.Command, commandName);
             item.Command.AddSubCommand(builder.Build(commandBuilder));
             return item;
         }
 
-        public static T InternalAddNonTerminalCommandWithSettings<T, TSettings>(this T item, string commandName, Action<NonTerminalCommandWithSettingsBuilder<TSettings>> commandBuilder)
+        public static T InternalAddNonTerminalCommandWithSettings<T, TSettings>(this T item, string commandName, Action<NonTerminalCommandBuilder<TSettings>> commandBuilder)
             where T : INonTerminalCommandWithoutSettingsBuilder<T>, ICommandBuilder
             where TSettings : new()
         {
@@ -59,7 +59,7 @@ namespace CommandLine
                 throw new ArgumentNullException(nameof(commandBuilder));
             }
 
-            var builder = new NonTerminalCommandWithSettingsBuilder<TSettings>(item.Command, commandName);
+            var builder = new NonTerminalCommandBuilder<TSettings>(item.Command, commandName);
             item.Command.AddSubCommand(builder.Build(commandBuilder));
             return item;
         }

@@ -22,19 +22,19 @@ namespace CommandLine
             where TDerivedSettings : TSettings, new()
         => this.AddNonTerminalCommandWithSettings<TDerivedSettings>(name, x => {});
 
-        public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
+        public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandBuilder<TDerivedSettings>> commandBuilder)
             where TDerivedSettings : TSettings, new()
         => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
 
         public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(
             string name,
-            Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
-            where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
+            Action<TerminalCommandBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
+            where TEntrypoint : IEntrypoint<TDerivedSettings>, new()
             where TDerivedSettings : TSettings, new()
         => this.InternalAddTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TEntrypoint, TSettings, TDerivedSettings>(name, commandBuilder);
 
         public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(string name)
-            where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
+            where TEntrypoint : IEntrypoint<TDerivedSettings>, new()
             where TDerivedSettings : TSettings, new()
         => this.AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(name, x => {});
 
@@ -51,7 +51,7 @@ namespace CommandLine
         }
 
         public CommandLineBuilder<TSettings> WithDefaultEntrypoint<TEntrypoint>()
-            where TEntrypoint : IEntrypointWithSettings<TSettings>
+            where TEntrypoint : IEntrypoint<TSettings>
         {
             this.command.UpdateEntrypointType(typeof(TEntrypoint));
             return this;

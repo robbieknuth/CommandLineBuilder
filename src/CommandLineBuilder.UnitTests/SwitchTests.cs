@@ -78,7 +78,7 @@ namespace CommandLine.UnitTests
                     .AddSwitch("--switchName", switchName, x => x.Value = 2));
         }
 
-        private class Entrypoint : IEntrypointWithSettings<Settings>
+        private class Entrypoint : IEntrypoint<Settings>
         {
             public Task<int> RunAsync(Settings settings, CancellationToken cancellationToken)
             {

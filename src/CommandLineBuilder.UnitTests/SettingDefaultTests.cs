@@ -65,7 +65,7 @@ namespace CommandLine.UnitTests
             Assert.Equal(2, value);
         }
 
-        private class Entrypoint : IEntrypointWithSettings<Settings>
+        private class Entrypoint : IEntrypoint<Settings>
         {
             public Task<int> RunAsync(Settings settings, CancellationToken cancellationToken)
             {
