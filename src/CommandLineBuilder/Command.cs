@@ -13,12 +13,14 @@ namespace CommandLine
         private readonly List<Command> children;
         private readonly Command? parent;
         private readonly HashSet<CommandName> existingInnerCommandNames;
-        private readonly Type? entrypointType;
         private readonly Type? settingsType;
         private readonly Dictionary<OptionName, UntypedOptionDefinition>? optionApplicators;
         private readonly Dictionary<OptionName, UntypedSwitchDefinition>? switchApplicators;
         private readonly List<UntypedPositionalDefinition>? positionalApplicators;
         private readonly List<UntypedSettingDefaultDefinition>? settingDefaultApplicators;
+
+        // mutable as this may be set as a default entrypoint type for the top level command
+        private Type? entrypointType;
 
         private Command(
             Command? parent,
@@ -72,8 +74,6 @@ namespace CommandLine
             {
                 throw new CommandStructureException($"Command name '{ commandName}' conflicts with existing command '{ existingValue }' in command '{ parent.name }'.");
             }
-
-            Debug.Assert(parent.entrypointType == null);
 
             return new Command(parent, commandName, entrypointType, settingsType);
         }
@@ -255,7 +255,6 @@ namespace CommandLine
                 throw new CommandStructureException($"Incoming command name { innerCommand.name } conflicts with command name { existingValue }.");
             }
 
-            Debug.Assert(this.entrypointType == null);
             this.existingInnerCommandNames.Add(innerCommand.name);
             this.children.Add(innerCommand);
         }
@@ -311,6 +310,17 @@ namespace CommandLine
             Debug.Assert(this.settingsType != null);
             Debug.Assert(this.settingDefaultApplicators != null);
             this.settingDefaultApplicators!.Add(untypedSettingDefaultDefinition);
+        }
+
+        internal void UpdateEntrypointType(Type entrypointType)
+        {
+            Debug.Assert(this.IsRootCommand());
+            if (this.entrypointType != null)
+            {
+                throw new CommandStructureException($"Default entrypoint type already assigned as { this.entrypointType.FullName }.");
+            }
+
+            this.entrypointType = entrypointType;
         }
 
         private static void EnsureOptionAndSwitchUniqueUpChain(OptionName longForm, OptionName? shortForm, Command? command)

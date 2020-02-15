@@ -43,16 +43,25 @@ namespace CommandLine
         public CommandLineBuilder<TSettings> AddSettingDefault(SettingDefaultDefinition<TSettings> settingDefaultDefinition)
             => this.InternalAddSettingDefault(settingDefaultDefinition);
 
+        public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name)
+            where TDerivedSettings : TSettings, new()
+                => this.AddNonTerminalCommandWithSettings<TDerivedSettings>(name, x => {});
+
         public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
-         where TDerivedSettings : TSettings, new()
-            => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
+            where TDerivedSettings : TSettings, new()
+                => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
 
         public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(
             string name,
             Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
             where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
             where TDerivedSettings : TSettings, new()
-            => this.InternalAddTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TEntrypoint, TSettings, TDerivedSettings>(name, commandBuilder);
+                => this.InternalAddTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TEntrypoint, TSettings, TDerivedSettings>(name, commandBuilder);
+
+        public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(string name)
+            where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
+            where TDerivedSettings : TSettings, new()
+                => this.AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(name, x => {});
 
         public CommandLineBuilder<TSettings> ConfigureHelp(Action<HelpOptions> helpConfigure)
         {
@@ -63,6 +72,13 @@ namespace CommandLine
         public CommandLineBuilder<TSettings> Configure(Action<ParserOptions> optionsConfigure)
         {
             optionsConfigure(this.parserOptions);
+            return this;
+        }
+
+        public CommandLineBuilder<TSettings> WithDefaultEntrypoint<TEntrypoint>()
+            where TEntrypoint : IEntrypointWithSettings<TSettings>
+        {
+            this.command.UpdateEntrypointType(typeof(TEntrypoint));
             return this;
         }
 

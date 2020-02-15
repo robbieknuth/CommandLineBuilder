@@ -47,14 +47,31 @@ namespace CommandLine
             where TSettings : new()
             => this.InternalAddTerminalCommandWithSettings(name, (TerminalCommandWithSettingsBuilder<TEntrypoint, TSettings> x) => { });
 
+        public CommandLineBuilder WithDefaultEntrypoint<TEntrypoint>()
+            where TEntrypoint : IEntrypoint
+        {
+            this.command.UpdateEntrypointType(typeof(TEntrypoint));
+            return this;
+        }
+
         public CommandLineBuilder Configure(Action<ParserOptions> optionsConfigure)
         {
+            if (optionsConfigure is null)
+            {
+                throw new ArgumentNullException(nameof(optionsConfigure));
+            }
+
             optionsConfigure(this.parserOptions);
             return this;
         }
 
         public CommandLineBuilder ConfigureHelp(Action<HelpOptions> helpConfigure)
         {
+            if (helpConfigure is null)
+            {
+                throw new ArgumentNullException(nameof(helpConfigure));
+            }
+
             helpConfigure(this.helpOptions);
             return this;
         }
