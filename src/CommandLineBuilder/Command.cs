@@ -18,6 +18,7 @@ namespace CommandLine
         private readonly Dictionary<OptionName, UntypedOptionDefinition>? optionApplicators;
         private readonly Dictionary<OptionName, UntypedSwitchDefinition>? switchApplicators;
         private readonly List<UntypedPositionalDefinition>? positionalApplicators;
+        private readonly List<UntypedSettingDefaultDefinition>? settingDefaultApplicators;
 
         private Command(
             Command? parent,
@@ -40,6 +41,7 @@ namespace CommandLine
             {
                 this.optionApplicators = new Dictionary<OptionName, UntypedOptionDefinition>();
                 this.switchApplicators = new Dictionary<OptionName, UntypedSwitchDefinition>();
+                this.settingDefaultApplicators = new List<UntypedSettingDefaultDefinition>();
 
                 if (this.entrypointType != null)
                 {
@@ -95,6 +97,14 @@ namespace CommandLine
 
                 // consume the name of this command
                 args = args.Slice(1);
+            }
+
+            // we've matched this command. So go ahead and add all the setting defaults since
+            // we want to apply them hierarchically in order
+            if (this.settingDefaultApplicators != null)
+            {
+                parseContext.SettingDefaultApplicators.AddRange(
+                    this.settingDefaultApplicators.Select(x => x.Applicator));
             }
 
             while (
@@ -168,6 +178,11 @@ namespace CommandLine
                     if (settings == null)
                     {
                         throw new Exception($"Unable to create settings type { this.settingsType.FullName }");
+                    }
+
+                    foreach (var applicator in parseContext.SettingDefaultApplicators)
+                    {
+                        applicator(settings);
                     }
 
                     foreach (var applicator in parseContext.OptionApplicators)
@@ -278,8 +293,16 @@ namespace CommandLine
         internal void AddSwitchFunction(UntypedSwitchDefinition switchDefitinion)
         {
             Debug.Assert(this.settingsType != null);
+            Debug.Assert(this.switchApplicators != null);
             EnsureOptionAndSwitchUniqueUpChain(switchDefitinion.Name, this);
             this.switchApplicators![switchDefitinion.Name] = switchDefitinion;
+        }
+
+        internal void AddSettingDefault(UntypedSettingDefaultDefinition untypedSettingDefaultDefinition)
+        {
+            Debug.Assert(this.settingsType != null);
+            Debug.Assert(this.settingDefaultApplicators != null);
+            this.settingDefaultApplicators!.Add(untypedSettingDefaultDefinition);
         }
 
         private static void EnsureOptionAndSwitchUniqueUpChain(OptionName optionName, Command? command)

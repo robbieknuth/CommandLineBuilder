@@ -3,7 +3,8 @@ using System.Linq.Expressions;
 
 namespace CommandLine
 {
-    public sealed class NonTerminalCommandWithSettingsBuilder<TSettings> : INonTerminalCommandWithSettingsBuilder<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>
+    public sealed class NonTerminalCommandWithSettingsBuilder<TSettings> 
+        : INonTerminalCommandWithSettingsBuilder<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>, ICommandBuilder
         where TSettings : new()
     {
         Command ICommandBuilder.Command => this.command;
@@ -18,16 +19,28 @@ namespace CommandLine
         }
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.InternalAddOption<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(OptionDefinition<TSettings>.Create(longForm, property, converter));
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, converter));
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
-            => this.InternalAddOption<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddOption<TPropertyValue>(OptionDefinition<TSettings> optionDefinition)
+            => this.InternalAddOption(optionDefinition);
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch(string longForm, Action<TSettings> applicator)
-            => this.InternalAddSwitch<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(SwitchDefinition<TSettings>.Create(longForm, applicator));
+            => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, applicator));
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch(string longForm, string shortForm, Action<TSettings> applicator)
-            => this.InternalAddSwitch<NonTerminalCommandWithSettingsBuilder<TSettings>, TSettings>(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
+            => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddSwitch(SwitchDefinition<TSettings> switchDefinition)
+            => this.InternalAddSwitch(switchDefinition);
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddSettingDefault(Action<TSettings> applicator)
+            => this.AddSettingDefault(SettingDefaultDefinition<TSettings>.Create(applicator));
+
+        public NonTerminalCommandWithSettingsBuilder<TSettings> AddSettingDefault(SettingDefaultDefinition<TSettings> settingDefaultDefinition)
+            => this.InternalAddSettingDefault(settingDefaultDefinition);
 
         public NonTerminalCommandWithSettingsBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
             where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()

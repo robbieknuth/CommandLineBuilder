@@ -5,7 +5,7 @@ namespace CommandLine
     internal static class NonTerminalCommandWithSettingsBuilderExtensions
     {
         public static T InternalAddTerminalCommandWithSettings<T, TEntrypoint, TBaseSettings, TDerivedSettings>(this T item, string name, Action<TerminalCommandWithSettingsBuilder<TEntrypoint, TDerivedSettings>> commandBuilder)
-            where T : INonTerminalCommandWithSettingsBuilder<T, TBaseSettings>
+            where T : INonTerminalCommandWithSettingsBuilder<T, TBaseSettings>, ICommandBuilder
             where TBaseSettings : new()
             where TEntrypoint : IEntrypointWithSettings<TDerivedSettings>, new()
             where TDerivedSettings : TBaseSettings, new()
@@ -18,7 +18,7 @@ namespace CommandLine
         }
 
         public static T InternalAddNonTerminalCommandWithSettings<T, TBaseSettings, TDerivedSettings>(this T item, string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
-            where T : INonTerminalCommandWithSettingsBuilder<T, TBaseSettings>
+            where T : INonTerminalCommandWithSettingsBuilder<T, TBaseSettings>, ICommandBuilder
             where TBaseSettings : new()
             where TDerivedSettings : TBaseSettings, new()
         {

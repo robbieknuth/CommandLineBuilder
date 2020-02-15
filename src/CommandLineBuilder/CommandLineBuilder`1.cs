@@ -19,39 +19,33 @@ namespace CommandLine
             this.parserOptions = new ParserOptions();
         }
 
-        public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
-         where TDerivedSettings : TSettings, new()
-            => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
+        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(string longForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, property, converter));
 
-        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(
-            string longForm,
-            Expression<Func<TSettings, TPropertyValue>> property,
-            Conversion<TPropertyValue> conversion)
-            => this.AddOption(OptionDefinition<TSettings>.Create(longForm, property, conversion));
+        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(string longForm, string shortForm, Expression<Func<TSettings, TPropertyValue>> property, Conversion<TPropertyValue> converter)
+            => this.AddOption<TPropertyValue>(OptionDefinition<TSettings>.Create(longForm, shortForm, property, converter));
 
-        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(
-            string longForm,
-            string shortForm,
-            Expression<Func<TSettings, TPropertyValue>> property,
-            Conversion<TPropertyValue> conversion)
-            => this.AddOption(OptionDefinition<TSettings>.Create(longForm, shortForm, property, conversion));
+        public CommandLineBuilder<TSettings> AddOption<TPropertyValue>(OptionDefinition<TSettings> optionDefinition)
+            => this.InternalAddOption(optionDefinition);
 
-        public CommandLineBuilder<TSettings> AddOption(OptionDefinition<TSettings> optionDefinition)
-            => this.InternalAddOption<CommandLineBuilder<TSettings>, TSettings>(optionDefinition);
-
-        public CommandLineBuilder<TSettings> AddSwitch(
-            string longForm,
-            Action<TSettings> applicator)
+        public CommandLineBuilder<TSettings> AddSwitch(string longForm, Action<TSettings> applicator)
             => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, applicator));
 
-        public CommandLineBuilder<TSettings> AddSwitch(
-            string longForm,
-            string shortForm,
-            Action<TSettings> applicator)
+        public CommandLineBuilder<TSettings> AddSwitch(string longForm, string shortForm, Action<TSettings> applicator)
             => this.AddSwitch(SwitchDefinition<TSettings>.Create(longForm, shortForm, applicator));
 
         public CommandLineBuilder<TSettings> AddSwitch(SwitchDefinition<TSettings> switchDefinition)
-            => this.InternalAddSwitch<CommandLineBuilder<TSettings>, TSettings>(switchDefinition);
+            => this.InternalAddSwitch(switchDefinition);
+
+        public CommandLineBuilder<TSettings> AddSettingDefault(Action<TSettings> applicator)
+            => this.AddSettingDefault(SettingDefaultDefinition<TSettings>.Create(applicator));
+
+        public CommandLineBuilder<TSettings> AddSettingDefault(SettingDefaultDefinition<TSettings> settingDefaultDefinition)
+            => this.InternalAddSettingDefault(settingDefaultDefinition);
+
+        public CommandLineBuilder<TSettings> AddNonTerminalCommandWithSettings<TDerivedSettings>(string name, Action<NonTerminalCommandWithSettingsBuilder<TDerivedSettings>> commandBuilder)
+         where TDerivedSettings : TSettings, new()
+            => this.InternalAddNonTerminalCommandWithSettings<CommandLineBuilder<TSettings>, TSettings, TDerivedSettings>(name, commandBuilder);
 
         public CommandLineBuilder<TSettings> AddTerminalCommandWithSettings<TEntrypoint, TDerivedSettings>(
             string name,
